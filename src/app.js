@@ -9,7 +9,8 @@ app.use(bodyParser.urlencoded({limit: '50mb', extended: true}))
 const exception = require('../utils/exception')
 
 const routes = requireDir('../routers', { recurse: true })
-const port = 3002
+const port = process.env.PORT || '3001' // default to 3001 if port info not set
+
 app.get('/', (req, res) => {
     res.json({
       meta: {
