@@ -40,7 +40,7 @@ module.exports = (sequelize, dataType) => {
     Comment.belongsTo(models.User, {as: 'by', foreignKey: 'userId'})
   }
   Comment.prototype.display = function () {
-    this.get({ plain: true })
+    return this.get({ plain: true })
   }
 
   return Comment

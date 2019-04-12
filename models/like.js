@@ -35,7 +35,7 @@ module.exports = (seqeulize, DataTypes) => {
   }
 
   Like.prototype.display = function () {
-    this.get({ plain: true })
+    return this.get({ plain: true })
   }
 
   return Like

@@ -25,6 +25,7 @@ app.use('/location', routes.location)
 app.use('/user', routes.user)
 app.use('/tour', routes.tour)
 app.use('/tour-member', routes.tour_member)
+app.use('/like', routes.like)
 
 app.use((err, req, res, next) => {
   if (err) {

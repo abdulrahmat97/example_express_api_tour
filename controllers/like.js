@@ -1,4 +1,4 @@
-const { Like, Op } = require('../models')
+const { Like, Tour, sequelize, Op } = require('../models')
 
 module.exports.index = async (req, res, next) => {
     const result = await Like.findAndCountAll()
@@ -19,24 +19,36 @@ module.exports.view =  async (req, res, next) => {
 }
 
 module.exports.store =  async (req, res, next) => {
+  let transaction = null
   try {
     const {
       userId,
       tourId,
      } = req.body
 
+     transaction = await sequelize.transaction()
+
      if(!userId) throw new Error('userId field is required')
      if(!tourId) throw new Error('tourId field is required')
 
-     const like = await Like.create({
-       userId,
+     const _like = await Like.create({
+      userId,
       tourId,
-    })
+    }, { transaction })
+
+    const tour = await Tour.findByPk(tourId, { transaction })
+
+    await tour.update({
+      like: tour.like + 1
+    }, { transaction })
+
+    await transaction.commit()
 
     res.json({
-      result: like.display()
+      result: _like.display()
     })
   } catch (e) {
+    if (transaction) await transaction.rollback()
     next(e)
   }
 
@@ -61,11 +73,24 @@ module.exports.update =  async (req, res, next) => {
 }
 
 module.exports.destroy = async (req, res, next) => {
+  let transaction = null
   try {
-    const like = await Like.findByPk(req.params.id)
-    await like.destroy()
+    transaction = await sequelize.transaction()
+
+    const like = await Like.findByPk(req.params.id, { transaction })
+    const tour = await Tour.findByPk(like.tourId, { transaction })
+
+    await tour.update({
+      like: tour.like - 1
+    }, { transaction })
+
+    await like.destroy({ transaction })
+
+    await transaction.commit()
+
     res.json({ status: 'done' })
   } catch (e) {
+    if (transaction) await transaction.rollback()
     next(e)
   }
 }
