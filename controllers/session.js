@@ -1,6 +1,7 @@
 const moment = require('moment')
 const { Session, User, Member, sequelize } = require('../models')
 const { ROLE } = require('../config/index')
+const { validEmail, randomString } = require('../utils/helper')
 
 module.exports.session = async (req, res, next) => {
    try {
@@ -13,7 +14,7 @@ module.exports.session = async (req, res, next) => {
     if (!session) throw new Error('010002')
 
     // session expired
-    if (session.expiry < moment()) {
+    if (moment(session.expiry).isBefore(moment())) {
       await session.destroy()
       throw new Error('010005')
     }
@@ -31,6 +32,9 @@ module.exports.session = async (req, res, next) => {
 module.exports.login = async (req, res, next) => {
   try {
     const { email, password, remember } = req.body
+
+    if (!email) throw new Error('email is required')
+    if (!password) throw new Error('password is required')
 
     const user = await User.validatePassword(email, password)
     if (!user) throw new Error('010101')
@@ -84,6 +88,56 @@ module.exports.register = async (req, res, next) => {
 
   } catch(e) {
     if (transaction) await transaction.rollback()
+    next(e)
+  }
+}
+
+module.exports.forgetPassword = async (req, res, next) => {
+  try {
+    const { email } = req.body
+
+    if (!email) throw new Error('Email is required')
+    if (!validEmail(email)) throw new Error('invalid email format')
+
+    // searhc email
+    const user = await User.findOne({ where: { email } })
+    if (!user) throw new Error('email is not registered')
+
+    user.resetPasswordToken = randomString(20)
+    user.resetPasswordExpiry = moment().add(5, 'minutes')
+
+    // send reset password token with email
+    //
+
+    await user.save()
+    res.json({status: 'done', token: user.resetPasswordToken})
+  } catch(e) {
+    next(e)
+  }
+}
+
+module.exports.resetPassword = async (req, res, next) => {
+  try {
+    const { password, resetToken } = req.body
+
+    if (!password) throw new Error('password is required')
+    if (!resetToken) throw new Error('010004')
+
+    const user = await User.findOne({ where: {
+      resetPasswordToken: resetToken
+    }})
+
+    if (!user) throw new Error('Reset password token is invalid')
+
+    if (moment(user.resetPasswordExpiry).isBefore(moment())) {
+      throw new Error('reset password token is expired')
+    }
+
+    user.password = password
+    user.save()
+
+    res.json({status: 'done'})
+  } catch(e) {
     next(e)
   }
 }

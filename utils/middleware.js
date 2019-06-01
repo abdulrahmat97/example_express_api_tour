@@ -15,7 +15,7 @@ module.exports.auth = async (req, res, next) => {
     if (!session) throw new Error('010002')
 
     // session expired
-    if (session.expiry < moment()) {
+    if (moment(session.expiry).isBefore(moment())) {
       await session.destroy()
       throw new Error('010005')
     }
