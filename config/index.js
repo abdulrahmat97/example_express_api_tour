@@ -1,10 +1,8 @@
+const CONFIG = require('./config')
+const DEFAULT = require('./default')
+const ENV = process.env.NODE_ENV || 'development'
+
 module.exports = {
-  data: {
-    nama: 'ilham',
-    pekerjaan: 'programmer',
-  },
-  datadua: {
-    nama: 'alan',
-    pekerjaan: 'marketing',
-  },
-};
+  dbConfig: CONFIG[ENV],
+  ...DEFAULT,
+}

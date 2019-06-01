@@ -4,17 +4,8 @@ module.exports = {
   up: (queryInterface, Sequelize) => Promise.resolve()
     .then(async () => {
       await queryInterface.addColumn('User', 'password', {
-        type: Sequelize.STRING,
+        type: Sequelize.TEXT,
         defaultValue: '',
-      })
-      await queryInterface.addColumn('User', 'reset_password_token', {
-        type: Sequelize.STRING,
-        allowNull: true,
-        defaultValue: '',
-      })
-      await queryInterface.addColumn('User', 'reset_password_expiry', {
-        type: Sequelize.DATE,
-        allowNull: true,
       })
       await queryInterface.addColumn('User', 'deleted_at', {
         type: Sequelize.DATE,

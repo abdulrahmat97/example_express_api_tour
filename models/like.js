@@ -21,10 +21,10 @@ module.exports = (seqeulize, DataTypes) => {
   }, {
     getterMethods: {
       createdAt() {
-        return moment(this.getDataValue('createdAt')).format('YYYY-MM-DD')
+        return moment(this.getDataValue('createdAt')).format()
       },
       updatedAt() {
-        return moment(this.getDataValue('updatedAt')).format('YYYY-MM-DD')
+        return moment(this.getDataValue('updatedAt')).format()
       },
     },
   })
