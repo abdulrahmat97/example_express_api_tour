@@ -50,7 +50,7 @@ module.exports = (sequelize, DataTypes) => {
     Session.belongsTo(models.User, { as: 'user' })
   }
 
-  Session.generateAccess = async ({id: userId, role, ...params}, remember = false) => {
+  Session.generateAccess = async ({id: userId, role, ...session}, remember = false) => {
     let transaction = null
     try {
       transaction = await sequelize.transaction()
