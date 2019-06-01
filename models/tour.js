@@ -51,8 +51,6 @@ module.exports = (sequelize, DataTypes) => {
     },
   })
 
-  //  selain untuk mengubah objek menjadi plaintext (POJO) script dibawah ini juga
-  //   bisa menyembunyikan beberapa field
   Tour.prototype.display = function () {
     const {
       deletedAt,
@@ -63,7 +61,6 @@ module.exports = (sequelize, DataTypes) => {
   }
 
   Tour.associate = function (models) {
-    // boleh pakai foreignKey atau tidak pakai
     Tour.belongsTo(models.User, { as: 'user', foreignKey: 'userId' })
     Tour.belongsTo(models.Location, { as: 'location', foreignKey: 'locationId' })
 

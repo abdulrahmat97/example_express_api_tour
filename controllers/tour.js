@@ -2,21 +2,17 @@ const { Tour, User, Location, Op } = require('../models')
 
 module.exports.index = async (req, res, next) => {
   try {
-    // kita juga bisa hanya dengan mengugnkana await Tour.findAndCountAll() *tanpa parameter*
-    // jika tidak ingin melakukan perubahan
     const result = await Tour.findAndCountAll({include: [
       {
         model: Location,
         as: 'location',
         attributes: {
-          // exclude akan menyembunyikan field yang tidak dibutuhkan
           exclude: ['deletedAt', 'createdAt', 'updatedAt']
         }
       },
       {
         model: User,
         as: 'user',
-        // untuk menampilkan field tertentu
         attributes: [
           'firstName',
           'lastName',

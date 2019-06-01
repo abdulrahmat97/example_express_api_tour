@@ -27,7 +27,6 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: false
       },
   }, {
-    // jika memiliki deleted_at field maka akan menjadi soft delete
     paranoid: true,
     getterMethods: {
       createdAt() {
@@ -40,7 +39,6 @@ module.exports = (sequelize, DataTypes) => {
   })
 
   Location.prototype.display = function () {
-    // mengganti format menjadi plain object (optional)
     const {
       deletedAt,
       ...location
@@ -49,7 +47,6 @@ module.exports = (sequelize, DataTypes) => {
   }
 
   Location.associate = function (models) {
-    // artinya loacationId ada di model tour
     Location.hasOne(models.Tour)
   }
 
