@@ -9,6 +9,7 @@ module.exports.auth = async (req, res, next) => {
     if ( typeof token === 'undefined' || token === null) {
       throw new Error('010003')
 		}
+
     const session = await Session.findOne({ where: { token } })
     if (!session) throw new Error('010002')
 
