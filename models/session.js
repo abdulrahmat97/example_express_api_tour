@@ -64,7 +64,7 @@ module.exports = (sequelize, DataTypes) => {
           token: randomString(100),
           expiry: moment().add(remember ? 300 : EXPIRY_SESSION, 'days')
         },
-        transaction
+        { transaction }
       )
       await transaction.commit()
 

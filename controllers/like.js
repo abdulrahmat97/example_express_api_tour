@@ -21,17 +21,14 @@ module.exports.view =  async (req, res, next) => {
 module.exports.store =  async (req, res, next) => {
   let transaction = null
   try {
-    const {
-      userId,
-      tourId,
-     } = req.body
+    const { userId, tourId } = req.body
 
      transaction = await sequelize.transaction()
 
      if(!userId) throw new Error('userId field is required')
      if(!tourId) throw new Error('tourId field is required')
 
-     const _like = await Like.create({
+     const like = await Like.create({
       userId,
       tourId,
     }, { transaction })
@@ -45,7 +42,7 @@ module.exports.store =  async (req, res, next) => {
     await transaction.commit()
 
     res.json({
-      result: _like.display()
+      result: like.display()
     })
   } catch (e) {
     if (transaction) await transaction.rollback()
@@ -56,7 +53,7 @@ module.exports.store =  async (req, res, next) => {
 
 module.exports.update =  async (req, res, next) => {
   try {
-    const {  userId, tourId } = req.body
+    const { userId, tourId } = req.body
 
     const like = await Like.findByPk(req.params.id)
 

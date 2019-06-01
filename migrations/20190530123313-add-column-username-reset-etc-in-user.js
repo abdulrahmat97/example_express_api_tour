@@ -29,7 +29,11 @@ module.exports = {
       await queryInterface.removeColumn('User', 'first_name')
       await queryInterface.removeColumn('User', 'last_name')
       await queryInterface.addIndex('User', {
-        fields: ['username', 'email'],
+        fields: ['username'],
+        type: 'UNIQUE',
+      })
+      await queryInterface.addIndex('User', {
+        fields: ['email'],
         type: 'UNIQUE',
       })
     }),

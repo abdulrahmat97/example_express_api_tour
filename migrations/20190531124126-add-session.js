@@ -39,10 +39,16 @@ module.exports = {
       defaultValue: Sequelize.NOW,
       allowNull: false,
     },
-  }).then(() => queryInterface.addIndex('Session', {
-    fields: ['user_id', 'token'],
-    type: 'UNIQUE'
-  })),
+  }).then(async () => {
+    queryInterface.addIndex('Session', {
+      fields: ['user_id'],
+      type: 'UNIQUE'
+    })
+    queryInterface.addIndex('Session', {
+      fields: ['token'],
+      type: 'UNIQUE'
+    })
+  }),
   down: (queryInterface, Sequelize) => {
       return queryInterface.dropTable('Session')
   }
