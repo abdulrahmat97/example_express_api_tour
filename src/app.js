@@ -28,7 +28,6 @@ app.use('/user', auth, routes.user)
 app.use('/tour', auth, routes.tour)
 app.use('/tour-member', auth, routes.tour_member)
 app.use('/like', auth, routes.like)
-app.use('/like', auth, routes.like)
 // app.use('/admin', auth, onlyAdmin, routes.session)
 
 app.use((err, req, res, next) => {
