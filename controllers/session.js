@@ -48,6 +48,7 @@ module.exports.login = async (req, res, next) => {
 module.exports.logout = async (req, res, next) => {
   try {
     const auth = req.get('Authorization')
+
     if (typeof auth === 'undefined' || auth === null) {
       throw new Error('010002')
     }
@@ -58,4 +59,8 @@ module.exports.logout = async (req, res, next) => {
   } catch (err) {
     next(err)
   }
+}
+
+module.exports.register = async (req, res, next) => {
+
 }
