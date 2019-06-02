@@ -88,7 +88,7 @@ module.exports.register = async (req, res, next) => {
     await transaction.commit()
 
      // send account-verification with email
-    const link = `${clientUrl}/verifycation-account?token=sometoken`
+    const link = `${clientUrl}/verify-account?verification_code=somecode`
     const emailDetail = emailData('verifyAccount', link)
 
     await nodeMail.sendMail({

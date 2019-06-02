@@ -24,12 +24,12 @@ module.exports = (sequelize, DataTypes) => {
     status: {
       type: DataTypes.TEXT,
       allowNull: false,
-      defaultValue: 'active'
+      defaultValue: 'active',
     },
     role: {
       type: DataTypes.TEXT,
       allowNull: false,
-      defaultValue: ROLE.MEMBER
+      defaultValue: ROLE.MEMBER,
     },
   }, {
     getterMethods: {

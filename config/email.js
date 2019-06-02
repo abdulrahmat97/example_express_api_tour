@@ -1,7 +1,7 @@
 const { sender } = require('./emailConfig')
 const FROM = `Team TOUR <${sender}>`
 
-module.exports.emailData = (type , link) => {
+module.exports.emailData = (type , link, params = {}) => {
   switch (type) {
     // verification account email
     case 'verifyAccount': return {
