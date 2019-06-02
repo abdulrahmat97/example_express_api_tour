@@ -13,7 +13,6 @@ module.exports.emailData = (type , link) => {
     case 'resetPassword': return {
       from: FROM,
       subject: 'reset your password',
-      url: 'b',
       html: `<p>click link below to reset your password <a href="${link}">Click here</a> </p>`
     }
   }

@@ -59,6 +59,7 @@ module.exports.register = async (req, res, next) => {
 
     if (!username) throw new Error('username is required')
     if (!email) throw new Error('Email is required')
+    if (!validEmail(email)) throw new Error('invalid email format')
     if (!name) throw new Error('name is required')
     if (!password) throw new Error('password is required')
 
