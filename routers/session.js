@@ -9,7 +9,7 @@ const {
 } = require('../controllers/session')
 const { auth } = require('../utils/middleware')
 
-router.get('/', session)
+router.get('/', auth, session)
 router.post('/', login)
 router.delete('/', auth, logout)
 router.post('/register', register)

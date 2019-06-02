@@ -1,7 +1,9 @@
 const moment = require('moment')
 const { Session, User, Member, sequelize } = require('../models')
-const { ROLE } = require('../config/index')
+const { ROLE, clientUrl } = require('../config/index')
 const { validEmail, randomString } = require('../utils/helper')
+
+const { nodeMail, emailData } = require('../utils/email')
 
 module.exports.session = async (req, res, next) => {
    try {
@@ -84,6 +86,15 @@ module.exports.register = async (req, res, next) => {
 
     await transaction.commit()
 
+     // send reset password token with email
+    const link = `${clientUrl}/verifycation-account?token=sometoken`
+    const emailDetail = emailData('verifyAccount', link)
+
+    await nodeMail.sendMail({
+      to: email,
+      ...emailDetail,
+    })
+
     res.json(member.display())
 
   } catch(e) {
@@ -105,12 +116,18 @@ module.exports.forgetPassword = async (req, res, next) => {
 
     user.resetPasswordToken = randomString(20)
     user.resetPasswordExpiry = moment().add(5, 'minutes')
+    await user.save()
 
     // send reset password token with email
-    //
+    const link = `${clientUrl}/reset-password?resetToken=${user.resetPasswordToken}`
+    const emailDetail = emailData('resetPassword', link)
 
-    await user.save()
-    res.json({status: 'done', token: user.resetPasswordToken})
+    await nodeMail.sendMail({
+      to: email,
+      ...emailDetail,
+    })
+
+    res.json({status: 'done'})
   } catch(e) {
     next(e)
   }
