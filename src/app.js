@@ -24,7 +24,7 @@ app.get('/', (req, res) => {
 
 app.use('/session', routes.session)
 app.use('/location', auth, routes.location)
-app.use('/user', auth, routes.user)
+app.use('/member', auth, routes.member)
 app.use('/tour', auth, routes.tour)
 app.use('/tour-member', auth, routes.tour_member)
 app.use('/like', auth, routes.like)

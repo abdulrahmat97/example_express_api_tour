@@ -5,7 +5,7 @@ const {
     update,
     store,
     destroy
-} = require('../controllers/user')
+} = require('../controllers/member')
 
 router.get('/', index)
 router.get('/:id', show)
