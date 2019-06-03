@@ -169,7 +169,7 @@ module.exports.resendVerifyAccoount = async (req, res, next) => {
     const link = `${clientUrl}/verify-account?verification_code=${user.verificationEmailToken}`
     const emailDetail = emailData('verifyAccount', link)
 
-    await nodeMail.sendMail({
+    nodeMail.sendMail({
       to: email,
       ...emailDetail,
     }).then(() => {
@@ -204,7 +204,7 @@ module.exports.forgetPassword = async (req, res, next) => {
     const link = `${clientUrl}/reset-password?resetToken=${user.resetPasswordToken}`
     const emailDetail = emailData('resetPassword', link)
 
-    await nodeMail.sendMail({
+    nodeMail.sendMail({
       to: email,
       ...emailDetail,
     }).then(() => {
