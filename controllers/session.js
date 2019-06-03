@@ -91,17 +91,15 @@ module.exports.register = async (req, res, next) => {
 
      // send account-verification with email
     const link = `${clientUrl}/verify-account?verification_code=${user.verificationEmailToken}`
-    const emailDetail = emailData('verifyAccount', link)
+    const emailDetail = emailData('verifyAccount', { link, email })
 
-    nodeMail.sendMail({
-      to: email,
-      ...emailDetail,
-    }).then(() => {
-      // ignoring process send email and view response
-      console.log('emaill sender success')
-    }).catch((e) => {
-      console.log(e)
-    })
+    nodeMail.sendMail({ ...emailDetail })
+      .then(() => {
+        // ignoring process send email and view response
+        console.log('emaill sender success')
+      }).catch((e) => {
+        console.log(e)
+      })
 
     res.json(member.display())
 
@@ -167,17 +165,15 @@ module.exports.resendVerifyAccoount = async (req, res, next) => {
 
     // send account-verification with email
     const link = `${clientUrl}/verify-account?verification_code=${user.verificationEmailToken}`
-    const emailDetail = emailData('verifyAccount', link)
+    const emailDetail = emailData('verifyAccount', { link, email })
 
-    nodeMail.sendMail({
-      to: email,
-      ...emailDetail,
-    }).then(() => {
-      // ignoring process send email and view response
-      console.log('emaill sender success')
-    }).catch((e) => {
-      console.log(e)
-    })
+    nodeMail.sendMail({ ...emailDetail })
+      .then(() => {
+        // ignoring process send email and view response
+        console.log('emaill sender success')
+      }).catch((e) => {
+        console.log(e)
+      })
 
     res.json({ status: 'done' })
   } catch(e) {
@@ -202,17 +198,15 @@ module.exports.forgetPassword = async (req, res, next) => {
 
     // send reset password token with email
     const link = `${clientUrl}/reset-password?resetToken=${user.resetPasswordToken}`
-    const emailDetail = emailData('resetPassword', link)
+    const emailDetail = emailData('verifyAccount', { link, email })
 
-    nodeMail.sendMail({
-      to: email,
-      ...emailDetail,
-    }).then(() => {
-      // ignoring process send email and view response
-      console.log('emaill sender success')
-    }).catch((e) => {
-      console.log(e)
-    })
+    nodeMail.sendMail({ ...emailDetail })
+      .then(() => {
+        // ignoring process send email and view response
+        console.log('emaill sender success')
+      }).catch((e) => {
+        console.log(e)
+      })
 
     res.json({ status: 'done' })
   } catch(e) {
