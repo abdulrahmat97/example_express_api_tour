@@ -93,9 +93,14 @@ module.exports.register = async (req, res, next) => {
     const link = `${clientUrl}/verify-account?verification_code=${user.verificationEmailToken}`
     const emailDetail = emailData('verifyAccount', link)
 
-    await nodeMail.sendMail({
+    nodeMail.sendMail({
       to: email,
       ...emailDetail,
+    }).then(() => {
+      // ignoring process send email and view response
+      console.log('emaill sender success')
+    }).catch((e) => {
+      console.log(e)
     })
 
     res.json(member.display())
@@ -154,18 +159,24 @@ module.exports.resendVerifyAccoount = async (req, res, next) => {
     if (!user) throw new Error('Unregistered users please create a new user')
     if (!!user.verifyAt) throw new Error('this account has been actived')
 
+    // update verification code
     await user.update({
       verificationEmailToken: randomString(50),
       verificationEmailTokenExpiry: increaseDays(2)
     })
 
-     // send account-verification with email
+    // send account-verification with email
     const link = `${clientUrl}/verify-account?verification_code=${user.verificationEmailToken}`
     const emailDetail = emailData('verifyAccount', link)
 
     await nodeMail.sendMail({
       to: email,
       ...emailDetail,
+    }).then(() => {
+      // ignoring process send email and view response
+      console.log('emaill sender success')
+    }).catch((e) => {
+      console.log(e)
     })
 
     res.json({ status: 'done' })
@@ -196,6 +207,11 @@ module.exports.forgetPassword = async (req, res, next) => {
     await nodeMail.sendMail({
       to: email,
       ...emailDetail,
+    }).then(() => {
+      // ignoring process send email and view response
+      console.log('emaill sender success')
+    }).catch((e) => {
+      console.log(e)
     })
 
     res.json({ status: 'done' })
