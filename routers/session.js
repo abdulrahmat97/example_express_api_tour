@@ -3,6 +3,8 @@ const {
     session,
     login,
     register,
+    verifyAccount,
+    resendVerifyAccoount,
     forgetPassword,
     resetPassword,
     logout,
@@ -13,8 +15,9 @@ router.get('/', auth, session)
 router.post('/', login)
 router.delete('/', auth, logout)
 router.post('/register', register)
+router.post('/verify-account', verifyAccount)
+router.post('/resend-verify-account', resendVerifyAccoount)
 router.post('/forget-password', forgetPassword)
 router.post('/reset-password', resetPassword)
-router.post('/register', register)
 
 module.exports = router

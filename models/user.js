@@ -56,6 +56,18 @@ module.exports = (sequelize, DataTypes) => {
         return moment(this.getDataValue('lastLogin')).format()
       },
     },
+    verificationEmailToken: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    verificationEmailTokenExpiry: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    verifyAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
   }, {
     paranoid: true,
     getterMethods: {
@@ -77,6 +89,9 @@ module.exports = (sequelize, DataTypes) => {
 
   User.prototype.display = function () {
     const {
+      verificationEmailToken,
+      verificationEmailTokenExpiry,
+      verifyAt,
       password,
       resetPasswordToken,
       resetPasswordExpiry,
@@ -116,6 +131,21 @@ module.exports = (sequelize, DataTypes) => {
           }
         }]
       })
+    }
+  }
+
+  User.removeAccount = async (userAccount) => {
+    try {
+      const memberAccount = await sequelize.models.Member.findOne({ where: { userId: userAccount.id } })
+
+      await Promise.all([
+        memberAccount.destroy({ force: true }),
+        userAccount.destroy({ force: true }),
+      ])
+
+      return
+    } catch(e) {
+      throw new Error('remove Account Error :', e)
     }
   }
 

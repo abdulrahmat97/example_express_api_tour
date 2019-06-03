@@ -6,7 +6,7 @@ module.exports = {
         id: 1,
         email: 'user@user.com',
         username: 'user',
-        password: Sequelize.fn('crypt', 'user', Sequelize.fn('gen_salt', 'md5')),
+        password: Sequelize.fn('crypt', 'user', Sequelize.fn('gen_salt', 'SHA2')),
         reset_password_token: '',
         status: true,
         role: ROLE.MEMBER,

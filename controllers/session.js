@@ -1,7 +1,7 @@
 const moment = require('moment')
 const { Session, User, Member, sequelize } = require('../models')
 const { ROLE, clientUrl } = require('../config/index')
-const { validEmail, randomString } = require('../utils/helper')
+const { validEmail, randomString, increaseDays } = require('../utils/helper')
 
 const { nodeMail, emailData } = require('../utils/email')
 
@@ -40,7 +40,7 @@ module.exports.login = async (req, res, next) => {
 
     const user = await User.validatePassword(email, password)
     if (!user) throw new Error('010101')
-
+    if (!user.status) throw new Error('Please verification your account')
     user.lastLogin = moment()
     user.save()
 
@@ -59,7 +59,7 @@ module.exports.register = async (req, res, next) => {
 
     if (!username) throw new Error('username is required')
     if (!email) throw new Error('Email is required')
-    if (!validEmail(email)) throw new Error('invalid email format')
+    if (!validEmail(email)) throw new Error('invalid Email format')
     if (!name) throw new Error('name is required')
     if (!password) throw new Error('password is required')
 
@@ -77,7 +77,9 @@ module.exports.register = async (req, res, next) => {
       email,
       username,
       password,
-      role: role || ROLE.MEMBER
+      role: role || ROLE.MEMBER,
+      verificationEmailToken: randomString(50),
+      verificationEmailTokenExpiry: increaseDays(2)
     }, { transaction })
 
     const member = await Member.create({
@@ -88,7 +90,7 @@ module.exports.register = async (req, res, next) => {
     await transaction.commit()
 
      // send account-verification with email
-    const link = `${clientUrl}/verify-account?verification_code=somecode`
+    const link = `${clientUrl}/verify-account?verification_code=${user.verificationEmailToken}`
     const emailDetail = emailData('verifyAccount', link)
 
     await nodeMail.sendMail({
@@ -100,6 +102,74 @@ module.exports.register = async (req, res, next) => {
 
   } catch(e) {
     if (transaction) await transaction.rollback()
+    next(e)
+  }
+}
+
+module.exports.verifyAccount = async (req, res, next) => {
+  try {
+    const { code } = req.body
+
+    if (!code) throw new Error('there is no code verification in the request')
+
+    // search code in user
+    const user = await User.findOne({ where: { verificationEmailToken: code } })
+    if (!user) throw new Error('verification code invalid')
+
+    // if code was verified
+    if (!!user.verifyAt && user.verificationEmailToken === null) {
+      throw new Error('the account has been confirmed')
+    }
+
+    // check expired code
+    if (moment(user.verificationEmailTokenExpiry).isBefore(moment())) {
+      // remove account if verification code expired
+      await User.removeAccount(user)
+      throw new Error('verification code is expired, please try again create account')
+    }
+
+    // update account if success
+    sequelize.options.omitNull = false
+    await user.update({
+      verificationEmailToken: null,
+      verificationEmailTokenExpiry: null,
+      status: true,
+      verifyAt: moment(),
+    })
+    sequelize.options.omitNull = true
+
+    res.json({ status: 'done' })
+  } catch(e) {
+    next(e)
+  }
+}
+
+module.exports.resendVerifyAccoount = async (req, res, next) => {
+  try {
+    const { email } = req.body
+    if (!email) throw new Error('email is required')
+    if (!validEmail(email)) throw new Error('invalid email format')
+
+    const user = await User.findOne({ where: { email } })
+    if (!user) throw new Error('Unregistered users please create a new user')
+    if (!!user.verifyAt) throw new Error('this account has been actived')
+
+    await user.update({
+      verificationEmailToken: randomString(50),
+      verificationEmailTokenExpiry: increaseDays(2)
+    })
+
+     // send account-verification with email
+    const link = `${clientUrl}/verify-account?verification_code=${user.verificationEmailToken}`
+    const emailDetail = emailData('verifyAccount', link)
+
+    await nodeMail.sendMail({
+      to: email,
+      ...emailDetail,
+    })
+
+    res.json({ status: 'done' })
+  } catch(e) {
     next(e)
   }
 }
@@ -128,7 +198,7 @@ module.exports.forgetPassword = async (req, res, next) => {
       ...emailDetail,
     })
 
-    res.json({status: 'done'})
+    res.json({ status: 'done' })
   } catch(e) {
     next(e)
   }
@@ -154,7 +224,7 @@ module.exports.resetPassword = async (req, res, next) => {
     user.password = password
     user.save()
 
-    res.json({status: 'done'})
+    res.json({ status: 'done' })
   } catch(e) {
     next(e)
   }

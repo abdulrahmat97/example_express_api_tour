@@ -5,3 +5,4 @@ const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@
 module.exports.validEmail = email => emailRegex.test(String(email).toLowerCase())
 
 module.exports.randomString = (length = 8) => crypto.randomBytes(length).toString('hex')
+module.exports.increaseDays = (increase = 1, isLenghtly = false) => moment().add(isLenghtly ? 300 : increase, 'days')

@@ -1,5 +1,5 @@
 const moment = require('moment')
-const { randomString } = require('../utils/helper')
+const { randomString, increaseDays } = require('../utils/helper')
 const { ROLE, EXPIRY_SESSION } = require('../config/index')
 
 module.exports = (sequelize, DataTypes) => {
@@ -57,14 +57,12 @@ module.exports = (sequelize, DataTypes) => {
 
       await Session.destroy({ where: { userId }, transaction })
       // update token
-      const session = await Session.create(
-        {
+      const session = await Session.create({
           userId,
           role,
           token: randomString(100),
-          expiry: moment().add(remember ? 300 : EXPIRY_SESSION, 'days')
-        },
-        { transaction }
+          expiry: increaseDays(EXPIRY_SESSION, remember)
+        }, { transaction }
       )
       await transaction.commit()
 
